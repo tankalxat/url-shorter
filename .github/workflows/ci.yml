@@ -51,5 +51,4 @@ jobs:
         with:
           name: checkstyle-${{ matrix.os }}
           path: |
-            target/site/checkstyle.html
             target/checkstyle-result.xml
