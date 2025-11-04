@@ -53,8 +53,8 @@ class URLServiceTest {
 
     @Test
     void createShortLink_GeneratesUniqueCode() {
-        final Link a = service.createShortLink(UUID.randomUUID(), "https://a", 0);
-        final Link b = service.createShortLink(UUID.randomUUID(), "https://b", 0);
+        final Link a = service.createShortLink(UUID.randomUUID(), "https://a.com", 0);
+        final Link b = service.createShortLink(UUID.randomUUID(), "https://b.com", 0);
         assertNotEquals(a.code(), b.code());
     }
 
@@ -68,7 +68,7 @@ class URLServiceTest {
     void open_Expired() throws Exception {
         final UUID u = UUID.randomUUID();
         final Instant now = Instant.now();
-        final Link l = new Link("OLD", "https://old", u, now.minusSeconds(5), now.minusSeconds(1), 0);
+        final Link l = new Link("OLD", "https://old.com", u, now.minusSeconds(5), now.minusSeconds(1), 0);
         repo.add(l);
         final Object res = service.open("OLD");
         assertEquals("EXPIRED", statusOf(res));
@@ -82,7 +82,7 @@ class URLServiceTest {
     void open_LimitReached() throws Exception {
         final UUID u = UUID.randomUUID();
         final Instant now = Instant.now();
-        final Link l = new Link("LIM", "https://lim", u, now, now.plusSeconds(1000), 1);
+        final Link l = new Link("LIM", "https://lim.com", u, now, now.plusSeconds(1000), 1);
         repo.add(l);
 
         final Object r1 = service.open("LIM");
@@ -100,7 +100,7 @@ class URLServiceTest {
     void open() throws Exception {
         final UUID u = UUID.randomUUID();
         final Instant now = Instant.now();
-        final Link l = new Link("OK", "https://ok", u, now, now.plusSeconds(1000), 2);
+        final Link l = new Link("OK", "https://ok.com", u, now, now.plusSeconds(1000), 2);
         repo.add(l);
         final Object r1 = service.open("OK");
         assertEquals("OPENED", statusOf(r1));
@@ -110,7 +110,7 @@ class URLServiceTest {
     @Test
     void listUpdateDelete() {
         final UUID u = UUID.randomUUID();
-        final Link l = service.createShortLink(u, "https://x", 3);
+        final Link l = service.createShortLink(u, "https://x.com", 3);
         assertEquals(1, service.listByUser(u).size());
         assertTrue(service.updateLimit(u, l.code(), 10));
         assertEquals(10, repo.get(l.code()).maxClicks());
@@ -122,8 +122,8 @@ class URLServiceTest {
     void deleteExpiredLinks() {
         final UUID u = UUID.randomUUID();
         final Instant now = Instant.now();
-        repo.add(new Link("A", "https://a", u, now.minusSeconds(10), now.minusSeconds(1), 0));
-        repo.add(new Link("B", "https://b", u, now, now.plusSeconds(1000), 0));
+        repo.add(new Link("A", "https://a.com", u, now.minusSeconds(10), now.minusSeconds(1), 0));
+        repo.add(new Link("B", "https://b.com", u, now, now.plusSeconds(1000), 0));
         final int removed = service.deleteExpiredLinks();
         assertEquals(1, removed);
         assertNull(repo.get("A"));
