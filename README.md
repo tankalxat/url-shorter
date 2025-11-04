@@ -50,3 +50,60 @@ p7vmwYt    11111111 https://github.com/tankalxat/… 2025-11-04 18:02:11 2025-11
 
 Process finished with exit code 0
 ```
+
+## Описание архитектуры
+
+Классы:
+
+- `Link` - инкапсулированный URL
+- `Session` - логика логина пользователей
+- `Config` - всё про конфигурацию приложения
+- `App` - основная часть работы приложения с cli-циклом и чистильщиком старых записей
+- `CmdHandler` - семейство обработчиков введенных команд
+- `Repository` - логика работы с данными приложения
+- `OpenResult` - результат открытия ссылки
+- `URLService` - логика работы со ссылками и пользователями
+
+## Тестирование
+
+Последовательность команд, покрывающая все требования ТЗ.
+
+```text
+help
+switch 11111111-2222-3333-4444-555555555555
+me
+shorten
+shorten invalid 2
+shorten https://github.com/tankalxat/url-shorter 2
+list
+open
+open UNKNOWN
+open <code из list>
+open clck.ru/<code из list>
+list
+switch
+switch not-uuid
+switch 11111111-2222-3333-4444-666666666666
+me
+list
+open <code из list прошлого пользователя>
+delete <code из list прошлого пользователя>
+switch 11111111-2222-3333-4444-555555555555
+open <code из list>
+inbox
+limit <code из list>
+limit <code из list> 3
+list
+open <code из list>
+list
+inbox
+switch 11111111-2222-3333-4444-666666666666
+shorten https://github.com/tankalxat/url-shorter 2
+list
+open <УНИКАЛЬНЫЙ code из list>
+limit UNKNOWN 12
+delete <УНИКАЛЬНЫЙ code из list>
+list
+brbrbrbaaabababobobobobibibibooboo228
+exit
+```
