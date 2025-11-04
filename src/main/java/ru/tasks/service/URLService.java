@@ -6,34 +6,40 @@ import ru.tasks.response.OpenResult;
 import ru.tasks.session.Link;
 import ru.tasks.session.Notification;
 
+import java.net.IDN;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class URLService {
 
     private final Repository repo;
     private final SecureRandom rnd = new SecureRandom();
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final Pattern IPV4 = Pattern.compile(
+            "^(25[0-5]|2[0-4]\\d|1?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|1?\\d?\\d)){3}$"
+    );
+    private static final Pattern DOMAIN = Pattern.compile(
+            "^([A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,}$"
+    );
 
     public URLService(final Repository repo) {
         this.repo = repo;
     }
 
     public Link createShortLink(final UUID user, final String longUrl, final Integer maxClicks) {
-        Objects.requireNonNull(longUrl, "url");
-
+        final String url = normalizeUrl(longUrl);
         final String code = generateUniqueCode();
         final Instant now = Instant.now();
         final Instant exp = now.plus(Config.linkTtl());
         final int limit = (maxClicks == null ? Config.DEFAULT_MAX_CLICKS : maxClicks);
-        final Link link = new Link(
-                code, normalizeUrl(longUrl), Objects.requireNonNullElse(user, UUID.randomUUID()), now, exp, limit
-        );
+        final Link link = new Link(code, url, Objects.requireNonNullElse(user, UUID.randomUUID()), now, exp, limit);
         repo.add(link);
-
         return link;
     }
 
@@ -111,11 +117,55 @@ public class URLService {
         return sb.toString();
     }
 
-    private static String normalizeUrl(final String url) {
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-            return url;
+    private static String normalizeUrl(final String input) {
+        String url = Objects.requireNonNull(input, "url").trim();
+
+        if (url.isBlank()) {
+            throw new IllegalArgumentException("Invalid URL: empty");
         }
 
-        return "https://" + url;
+        if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+            url = "https://" + url;
+        }
+
+        if (url.indexOf(' ') >= 0) {
+            throw new IllegalArgumentException("Invalid URL: contains spaces");
+        }
+
+        final URI uri = parseUri(url);
+        final String scheme = uri.getScheme();
+
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+            throw new IllegalArgumentException("Invalid URL scheme: " + scheme);
+        }
+
+        final String host = uri.getHost();
+
+        if (host == null || host.isEmpty()) {
+            throw new IllegalArgumentException("Invalid URL: missing host");
+        }
+
+        if (!isValidHost(host)) {
+            throw new IllegalArgumentException("Invalid URL host: " + host);
+        }
+
+        return uri.toString();
+    }
+
+    private static URI parseUri(String s) {
+        try {
+            return new URI(s);
+        } catch (final URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid URL: " + s);
+        }
+    }
+
+    private static boolean isValidHost(final String host) {
+        if ("localhost".equalsIgnoreCase(host)) {
+            return true;
+        }
+
+        final String ascii = IDN.toASCII(host);
+        return IPV4.matcher(ascii).matches() || DOMAIN.matcher(ascii).matches();
     }
 }
