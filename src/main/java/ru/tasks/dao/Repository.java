@@ -1,7 +1,7 @@
 package ru.tasks.dao;
 
-import ru.tasks.Link;
-import ru.tasks.Notification;
+import ru.tasks.session.Link;
+import ru.tasks.session.Notification;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

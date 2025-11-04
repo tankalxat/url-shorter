@@ -1,7 +1,7 @@
 package ru.tasks.cmd;
 
-import ru.tasks.URLService;
-import ru.tasks.Session;
+import ru.tasks.service.URLService;
+import ru.tasks.session.Session;
 import ru.tasks.cmd.handler.DefaultCmdHandler;
 import ru.tasks.cmd.handler.DeleteCmdHandler;
 import ru.tasks.cmd.handler.HelpCmdHandler;

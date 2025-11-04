@@ -1,4 +1,4 @@
-package ru.tasks;
+package ru.tasks.session;
 
 import java.io.Serializable;
 import java.time.Instant;

@@ -1,8 +1,9 @@
-package ru.tasks;
+package ru.tasks.cmd;
 
-import ru.tasks.cmd.CmdHandlerFactory;
+import ru.tasks.service.URLService;
 import ru.tasks.config.Config;
 import ru.tasks.dao.Repository;
+import ru.tasks.session.Session;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -25,7 +26,7 @@ public class App {
     public App() {
         this.baseDir = Config.baseDir();
         this.service = new URLService(new Repository(Config.dataFile(baseDir)));
-        final long cleanupSeconds = Long.getLong("cleanupSeconds", Config.DEFAULT_CLEANUP_SECONDS);
+        final long cleanupSeconds = Config.cleanupSeconds();
         this.scheduler = getScheduler();
         scheduler.scheduleAtFixedRate(() -> {
             try {

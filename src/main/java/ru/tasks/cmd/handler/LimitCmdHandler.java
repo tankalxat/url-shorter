@@ -1,7 +1,7 @@
 package ru.tasks.cmd.handler;
 
-import ru.tasks.URLService;
-import ru.tasks.Session;
+import ru.tasks.service.URLService;
+import ru.tasks.session.Session;
 import ru.tasks.cmd.CmdHandler;
 
 import java.util.List;

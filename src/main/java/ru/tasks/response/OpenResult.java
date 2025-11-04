@@ -1,4 +1,4 @@
-package ru.tasks;
+package ru.tasks.response;
 
 public record OpenResult(OpenStatus status, String url) {
 

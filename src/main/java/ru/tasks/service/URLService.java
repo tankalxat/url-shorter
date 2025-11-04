@@ -1,7 +1,10 @@
-package ru.tasks;
+package ru.tasks.service;
 
 import ru.tasks.config.Config;
 import ru.tasks.dao.Repository;
+import ru.tasks.response.OpenResult;
+import ru.tasks.session.Link;
+import ru.tasks.session.Notification;
 
 import java.security.SecureRandom;
 import java.time.Instant;

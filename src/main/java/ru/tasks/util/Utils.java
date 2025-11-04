@@ -1,8 +1,8 @@
 package ru.tasks.util;
 
-import ru.tasks.Session;
+import ru.tasks.session.Session;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -97,6 +97,15 @@ public final class Utils {
 
     public static String shortUuid(final UUID id) {
         return id.toString().substring(0, 8);
+    }
+
+    public static Long parsePositiveLong(final String s) {
+        try {
+            final long v = Long.parseLong(s.trim());
+            return v > 0 ? v : null;
+        } catch (final NumberFormatException e) {
+            return null;
+        }
     }
 
     private Utils() {

@@ -1,6 +1,6 @@
 package ru.tasks.cmd.handler;
 
-import ru.tasks.Session;
+import ru.tasks.session.Session;
 import ru.tasks.cmd.CmdHandler;
 
 public class MeCmdHandler extends CmdHandler {
